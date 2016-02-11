@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import ButtonController from './apps/components/ButtonController';
+import AppButton from './apps/button/index.js';
 
 ReactDOM.render(
-  <ButtonController />,
+  <AppButton />,
   document.getElementById('wrapper')
 );
