@@ -134,3 +134,55 @@
         
 3. 组件的生命周期查阅上文
 4. 在 JSX 中的 HTML 标签，使用 ref 字段后, 可以在代码中使用 this.refs.XXX.getDOMNode() 可以操作真实 DOM
+
+## DEMO 讲解
+
+> 理解 demo 需要先理解 FLUX 的数据单项流动
+> DEMO 中使用了 FLUX 作为状态管理器
+
+### constants
+* actionType.js
+    1. 使用 fbjs 的小工具 keyMirror 来更方便的定义 action 的 CONST 列表
+    2. 将 CONST 使用 export 进行输出，方便其他 js 进行引用
+    3. 用 CONST 的方式定义 action type 可以在 action 与 dispatcher 进行绑定时候，避免一些低级错误
+
+### stores
+
+> 由于 Store 需要在变动后向 View 发送"change"事件，因此它必须实现事件接口
+> 所以 ButtonStore 继承了EventEmitter.prototype，因此就能使用ButtonStore.on()和ButtonStore.emit()，来监听和触发事件了。   
+> ButtonStore 更新后（this.addItemHandler()）发出事件（this.emitChange()），表明状态已经改变。
+> View（即ButtonController） 监听到这个事件，就可以查询新的状态，更新页面了。
+
+* ButtonStore.js
+    * ButtonStore.itemStore 用来保存条目，
+    * ButtonStore.emitChange() 用来发出一个 change 事件。
+    * ButtonStore.addChangeListener() 用来监听 itemStore 更新
+    * ButtonStore.removeChangeListener() 用来移除一个 change 事件
+    
+    
+### dispatcher
+
+> Dispatcher 的作用是将 Action 派发到 Store，可以将他看作一个路由器，Dispatcher 只用来派发 Action，不应该有其他逻辑
+
+* AppDispatcher.js
+    * 使用 flux 的 Dispatcher.register 方法用来登记 Action 的回调函数
+    * Dispatcher 收到 ADD_ITEM 动作，就会执行之后的代码，使用 ButtonStore的函数对 Store 进行操作。
+    
+### action
+
+> 每个 Action 都是一个对象，包含一个 actionType 属性（说明动作的类型）和一些其他属性（用来传递数据）。
+
+* ButtonActions.js
+    * ButtonActions.addItem方法使用Dispatcher.dispatch，把动作 ADD_ITEM 与 ButtonStore 进行绑定。
+
+### Components
+
+* ButtonController.js
+    * 通过 ButtonController.componentDidMount 将onChange绑定到 store 的change 事件
+    * 当 ButtonController 发现 Store 更新时，就会调用 this.onChange 更新组件状态，从而触发重新渲染。
+    * 封装 addItem 到 ButtonController.createItem，并作为 props 提供给 ButtonComponent 组件
+    * 将 Store 作为 props 提供给 ButtonComponent 组件
+   
+* ButtonComponent.js
+    * 当 ButtonController 里面的 Store 更新时候，会通过 props 告知 ButtonComponent 同时进行渲染。
+
