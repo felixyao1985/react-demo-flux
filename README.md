@@ -44,16 +44,16 @@
 #### 3.1 简单模型对比
 
 * MVC
-
-		Action -> Controller -> Model <-> View 
-
+```
+Action -> Controller -> Model <-> View 
+```
 * FLUX
-
-		Action -> Dispatcher -> Store --> View
-					    A                  |
-						|                  V
-					    <----  Action  <---- 
-
+```
+Action -> Dispatcher -> Store --> View
+                A                  |
+                |                  V
+                <----  Action  <---- 
+```
 	* 当 Action 触发时，决定了 Store 如何更新。
 	* 当 Store 变化后，View 同时被更新，还可能生成一个由 Dispatcher 处理的 Action。这确保了数据在系统组件间单向流动。
 	* 当系统有多个 Store 和 View 时，仍可视为只有一个 Store 和一个 View，因为数据只朝一个方向流动。
@@ -66,33 +66,31 @@
 > 随着业务增多，系统的复杂性就会成级数增长，就会出现以下情况
 
 * MVC
-
-							 -> Model <---> View
-							/          \ /  
-						   /            X 
-					      /            / \  
-		Action -> Controller -> Model <---> View
-					      \	           \ /  
-		         		   \			X  
-							\          / \  
-							 -> Model <---> View
-
+```
+                     -> Model <---> View
+                    /          \ /  
+                   /            X 
+                  /            / \  
+Action -> Controller -> Model <---> View
+                  \            \ /  
+                   \            X  
+                    \          / \  
+                     -> Model <---> View
+```
 	* 以上当使用单一控制器处理多个模型的时候，模型与视图间就可能存在双向数据的流动，复杂度的增加，会让程序非常难以理解和调试
 
 * FLUX
-
-
-
-				   -> Store ---> View ---> Action -> 
-				  /         \ /       \ /           \
-				 /           X         X             \
-			    /           / \       / \             \  
-		Dispatcher -> Store ---> View ---> Action -> Dispatcher (所有的Action最后都会走到Dispatcher)
-			    \	        \ /       \ /             /   
-		         \			 X         X             /
-				  \         / \       / \           / 
-				   -> Store ---> View ---> Action ->
-
+```
+           -> Store ---> View ---> Action -> 
+          /         \ /       \ /           \
+         /           X         X             \
+        /           / \       / \             \  
+Dispatcher -> Store ---> View ---> Action -> Dispatcher (所有的Action最后都会走到Dispatcher)
+        \           \ /       \ /             /   
+         \           X         X             /
+          \         / \       / \           / 
+           -> Store ---> View ---> Action ->
+```
 	* 由以上模型的模型，可以知道 FLUX 并不比 MVC简单，关键的不同之处在于 FLUX 所有的箭头都指向一个方向。这就让 FLUX 的代码更具有可预测性
 	* FLUX 中的派发器确保系统中只一次只会有一种 Action 流，如果这个 Action 还没有处理完， 那么这时候再派发一个 Action 将会触发一个错误， **具体案例在后续文章中进行解释**
 
